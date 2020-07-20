@@ -20,6 +20,14 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
+		
+		// $query=$this->db->query('select * from tasks_parent');
+		// foreach ($query->result() as $row){
+		// 	$result=$row->name;
+		// }
+		// $data['test']='hellow samary';
+		// $data['result']=strval($result);
+		// $this->smarty->view('test.tpl',$data);
 		$this->load->view('welcome_message');
 	}
 }

@@ -1,4 +1,4 @@
-<div>
+<div id="modal_make_task">
     <div class="make-task-header">
     </div>
     <div class="make-task-content">

@@ -2,6 +2,11 @@
     margin:0;
     padding:0;
     box-sizing: content-box;
+    border: none;
+    outline: none;
+}
+input{
+    display: block;
 }
 
 body{
@@ -16,11 +21,14 @@ body{
 }
 
 header{
-    display:flex;
-    align-items: center;
-    height:4rem;
     background-color: #222222;
     color:white;
+}
+.header-content{
+    height:4rem;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 main{
@@ -33,4 +41,16 @@ footer{
     height:4rem;
     background-color: #222222;
     color:white;
+}
+
+#modal_overlay{
+    display: none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    z-index: 1;
+    background-color: #222222;
+    opacity:0.8;
 }
