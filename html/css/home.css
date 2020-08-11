@@ -3,6 +3,13 @@
     display:flex;
     justify-content: space-between;
 }
+#bt_submit{
+    color:white;
+    background-color:#222222;
+    height:2rem;
+    width:5rem;
+    padding:0.5rem;
+}
 
 /* parentタスク表示area */
 #area_tasks_parent{
@@ -25,7 +32,6 @@
     width:calc(100% - 1rem);
     font-size: 1.5rem;
 }
-
 .tasks-footer{
     position:absolute;
     bottom:0rem;
@@ -47,10 +53,35 @@ label{
     margin-right:1rem;
 }
 .row-task{
-    width:100%;
+    width:calc(100% - 1rem);
+    padding:0.5rem;
+    height:1.5rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
+}
+.area-option{
+    display: flex;
+    align-items: center;
+    height:2.5rem;
+    position: relative;
+}
+.options{
+    display: none;
+    position: absolute;
+    padding:0.5rem;
+    right:-0.5rem;
+    top: 2.5rem;
+    background-color: white;
+    z-index: 1;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    width:5rem;
+    height:3.5rem;
+}
+
+img.icon-option{
+    height: 1.5rem;
 }
 /* childタスク表示area */
 #area_tasks_child{
@@ -102,5 +133,42 @@ label{
     margin:auto;
     width:30rem;
     height:20rem;
+    padding:1rem;
     background-color: white;
+}
+.make-task-header{
+    width:100%;
+    height:2rem;
+    background-color: #FEE715;
+    color: black;
+}
+.make-task-content{
+    width:100%;
+    height: calc(100% - 5.5rem);
+}
+.label-modal{
+    height:1rem;
+}
+#task_name{
+    width:100%;
+    height:1.5rem;
+    border:1px solid #222222;
+}
+#task_comment{
+    width:100%;
+    height:calc(20rem - 10.5rem);
+    border:1px solid #222222;
+
+}
+.make-task-footer{
+    width:100%;
+    height:3.5rem;
+    text-align: right;
+}
+
+.bt-task-add{
+    background-color: #FEE715;
+    width:4rem;
+    height:2.5rem;
+    margin-top: 1rem;
 }
