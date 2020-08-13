@@ -35,24 +35,65 @@ class Home extends CI_Controller {
                     'name'=>htmlspecialchars($task_parent_new['name']),
                     'comment'=>htmlspecialchars($task_parent_new['comment']),
                     'check_flag'=>(int)$task_parent_new['check_flag'],
+                    'delete_flag' =>(int)$task_parent_new['delete_flag'],
                 ];
+
                 $this->db->insert('tasks_parent',$data);
+                $insertedId=$this->db->insert_id();
+
+                // 新規作成された親タスクに子タスクも作成されていた場合
+                if(isset($task_parent_new['children'])){
+                    foreach($task_parent_new['children'] as $childIncluded){
+                        $data=[
+                            'name'=>htmlspecialchars($childIncluded['name']),
+                            'comment'=>htmlspecialchars($childIncluded['comment']),
+                            'check_flag'=>(int)$childIncluded['check_flag'],
+                            'delete_flag' =>(int)$childIncluded['delete_flag'],
+                            'parent_id' =>$insertedId, //新規作成した親タスクのID
+                        ];
+                        $this->db->insert('tasks_child',$data);
+                    }
+                }
+          
+
+            // 親タスク削除 and 更新
+            }else{
+                $data=[
+                    'name'=>htmlspecialchars($task_parent_new['name']),
+                    'comment'=>htmlspecialchars($task_parent_new['comment']),
+                    'check_flag'=>(int)$task_parent_new['check_flag'],
+                    'delete_flag'=>(int)$task_parent_new['delete_flag'],
+                ];
+                $this->db->where('id', $task_parent_new['id']);
+                $this->db->update('tasks_parent', $data);
             }
-            // 子タスクの新規作成
             if(!empty($task_parent_new['children'])){
                 foreach($task_parent_new['children'] as $task_child_new){
-                    if($task_child_new['id'] < 0){
+                    // 子タスクの新規作成
+                    if($task_child_new['id'] < 0 && $task_child_new['parent_id'] > 0){
                         $data=[
                             'name'=>htmlspecialchars($task_child_new['name']),
                             'comment'=>htmlspecialchars($task_child_new['comment']),
                             'check_flag'=>(int)$task_child_new['check_flag'],
-                            'parent_id'=>$task_child_new['parent_id'],
+                            'delete_flag' =>(int)$task_child_new['delete_flag'],
+                            'parent_id'=>(int)$task_child_new['parent_id'],
                         ];
                         $this->db->insert('tasks_child',$data);
+                    // 子タスク削除 and 更新
+                    }else{
+                        $data=[
+                            'name'=>htmlspecialchars($task_child_new['name']),
+                            'comment'=>htmlspecialchars($task_child_new['comment']),
+                            'check_flag'=>(int)$task_child_new['check_flag'],
+                            'delete_flag' =>(int)$task_child_new['delete_flag'],
+                        ];
+                        $this->db->where('id', $task_child_new['id']);
+                        $this->db->update('tasks_child', $data);
                     }
     
                 }
             }
+        
         }
         $this->output
         ->set_content_type('application/json')
