@@ -30,6 +30,8 @@
 }
 #tasks_parent{
     width:calc(100% - 1rem);
+    height:calc(100% - 7rem);
+    overflow: scroll;
     font-size: 1.5rem;
 }
 .tasks-footer{
@@ -56,17 +58,21 @@ label{
     width:calc(100% - 1rem);
     padding:0.5rem;
     height:1.5rem;
-    font-size: 1.5rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    white-space:nowrap;
+}
+.row-task-name{
+    width: calc(100% - 1.5rem);
+    height:1.5rem;
     overflow: scroll;
+    white-space: nowrap;
 }
 .area-option{
     display: flex;
     align-items: center;
-    height:2.5rem;
+    height:1.5rem;
     position: relative;
 }
 .options{
@@ -100,6 +106,8 @@ img.icon-option{
 
 #tasks_child{
     width:calc(100% - 1rem);
+    height:calc(100% - 7rem);
+    overflow: scroll;
     font-size: 1rem;
 }
 
