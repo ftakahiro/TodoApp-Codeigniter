@@ -4,8 +4,8 @@
     justify-content: space-between;
 }
 #bt_submit{
-    color:white;
-    background-color:#222222;
+    color:#222222;
+    background-color:#FEE715;
     height:2rem;
     width:5rem;
     padding:0.5rem;
@@ -17,7 +17,7 @@
     width:30%;
     height:calc(100vh - 22.5rem);
     margin-top:1rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    border:1px solid #222222;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -60,6 +60,8 @@ label{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    white-space:nowrap;
+    overflow: scroll;
 }
 .area-option{
     display: flex;
@@ -73,6 +75,7 @@ label{
     padding:0.5rem;
     right:-0.5rem;
     top: 2.5rem;
+    font-size: 1rem;
     background-color: white;
     z-index: 1;
     box-shadow: 0 0 10px rgba(0,0,0,0.4);
@@ -89,7 +92,7 @@ img.icon-option{
     width:calc(70% - 1rem);
     height:calc(100vh - 22.5rem);
     margin-top:1rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    border:1px solid #222222;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -118,7 +121,7 @@ img.icon-option{
     height:calc(10rem - 1rem);
     padding:0.5rem;
     margin: 0.5rem 0 1rem 0;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    border:1px solid #222222;
 }
 
 /* モーダル */
@@ -137,8 +140,11 @@ img.icon-option{
     background-color: white;
 }
 .make-task-header{
-    width:100%;
-    height:2rem;
+    display: flex;
+    align-items: center;
+    width:calc(100% - 1rem);
+    height:1rem;
+    padding:0.5rem;
     background-color: #FEE715;
     color: black;
 }
@@ -147,28 +153,40 @@ img.icon-option{
     height: calc(100% - 5.5rem);
 }
 .label-modal{
-    height:1rem;
-}
-#task_name{
-    width:100%;
     height:1.5rem;
+}
+.modal-area-name{
+    width: 100%;
+    height:3.5rem;
+}
+.modal-area-comment{
+    width: 100%;
+    height:calc(100% - 4.5rem);
+}
+
+#task_name{
+    width:calc(100% - 1rem);
+    padding:0.5rem;
+    height:1rem;
     border:1px solid #222222;
 }
 #task_comment{
-    width:100%;
-    height:calc(20rem - 10.5rem);
+    width:calc(100% - 1rem);
+    padding:0.5rem;
+    height:calc(100% - 1.5rem);
     border:1px solid #222222;
 
 }
 .make-task-footer{
     width:100%;
-    height:3.5rem;
+    height:2.5rem;
     text-align: right;
+    margin-top: 1rem;
+    margin-top: 1rem;
 }
 
 .bt-task-add{
     background-color: #FEE715;
     width:4rem;
     height:2.5rem;
-    margin-top: 1rem;
 }

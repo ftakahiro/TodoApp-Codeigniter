@@ -6,7 +6,9 @@
     outline: none;
     border-radius: 0.3rem;
 }
-
+input,textarea {
+    -webkit-appearance: none;
+  }
 /* checkbox */
 input[type=checkbox]{
     display: none;
@@ -32,8 +34,8 @@ input[type=checkbox]:checked + label:before{
 }
 
 header{
-    background-color: #FEE715;
-    color:#222222;
+    color: white;
+    background-color:#222222;
 }
 .header-content{
     height:4rem;
