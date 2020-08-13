@@ -2,13 +2,13 @@
     <div class="make-task-header">
     </div>
     <div class="make-task-content">
-        <div>
-            <label for="task_name" class="label-modal"3>タスク名</label>
+        <div class="modal-area-name">
+            <div class="label-modal">タスク名</div>
             <input type="text" placeholder="タスク名" id="task_name">
         </div>
-        <div>
-            <label for="task_comment" class="label-modal">コメント</label>
-            <input type="text" placeholder="コメント" id="task_comment">
+        <div class="modal-area-comment">
+            <div class="label-modal">コメント</div>
+            <textarea placeholder="コメント" id="task_comment"></textarea>
         </div>
     </div>
     <div class="make-task-footer">
