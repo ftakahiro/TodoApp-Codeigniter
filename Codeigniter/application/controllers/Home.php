@@ -67,7 +67,7 @@ class Home extends CI_Controller {
                 $this->db->where('id', $task_parent_new['id']);
                 $this->db->update('tasks_parent', $data);
             }
-            if(!empty($task_parent_new['children'])){
+            if(isset($task_parent_new['children'])){
                 foreach($task_parent_new['children'] as $task_child_new){
                     // 子タスクの新規作成
                     if($task_child_new['id'] < 0 && $task_child_new['parent_id'] > 0){
