@@ -224,6 +224,7 @@ $(function(){
             closeModal();
         // 子タスクを追加
         }else if(element.dataset.flag == 1){
+            console.log('ok');
             const data={id:countChildNewTask,name:$('#task_name').val(),parent_id:element.dataset.parentId,check_flag:'0',comment:$('#task_comment').val(),delete_flag:'0'};
             for(i=0;i<taskData.length;i++){
                 if(taskData[i].id == element.dataset.parentId){
@@ -236,8 +237,8 @@ $(function(){
                     setParentTask(taskData);
                     setChildTask(element.dataset.parentId);
                     closeModal();
-                }
                     break;
+                }
             }
 
         }
@@ -250,9 +251,9 @@ $(function(){
             updateParentData(element.dataset.parentId,$('#task_name').val(),$('#task_comment').val());
             setParentTask(taskData);
             closeModal();
-        // 子タスクを追加
+        // 子タスクを編集
         }else if(element.dataset.flag == 1){
-            updateChildData(element.dataset.parentId,element.dataset.childId,null,$('#task_name').val(),$('#task_comment').val());
+            updateChildData(element.dataset.childId,element.dataset.parentId,null,$('#task_name').val(),$('#task_comment').val());
             closeModal();
         }
 
