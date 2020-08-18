@@ -16,10 +16,16 @@ class Home_model extends CI_Model {
 
     public function processData($tasksAllNew)
     {
+        $this->load->library('form_validation');
         // 新規作成
-        foreach($tasksAllNew as $taskParentNew){
+        foreach($tasksAllNew as $taskParentNew) {
+            // バリデーション
+            if ($this->form_validation->set_data($taskParentNew)->run('task_parent') === False){
+                return False;
+            }
+            
             // 親タスクの新規作成
-            if($taskParentNew['id'] < 0) {
+            if ($taskParentNew['id'] < 0) {
                 $data = [
                     'name' => htmlspecialchars($taskParentNew['name']),
                     'comment' => htmlspecialchars($taskParentNew['comment']),
@@ -28,11 +34,15 @@ class Home_model extends CI_Model {
                 ];
 
                 $this->db->insert('tasks_parent',$data);
-                $insertedId=$this->db->insert_id();
+                $insertedId = $this->db->insert_id();
 
                 // 新規作成された親タスクに子タスクも作成されていた場合
-                if(isset($taskParentNew['children'])) {
+                if (isset($taskParentNew['children'])) {
                     foreach($taskParentNew['children'] as $childIncluded){
+                        // バリデーション
+                        if ($this->form_validation->set_data($childIncluded)->run('task_child') === False){
+                            return False;
+                        }
                         $data = [
                             'name' => htmlspecialchars($childIncluded['name']),
                             'comment' => htmlspecialchars($childIncluded['comment']),
@@ -57,27 +67,31 @@ class Home_model extends CI_Model {
                 $this->db->update('tasks_parent', $data);
             }
 
-            if(isset($taskParentNew['children'])) {
-                foreach($taskParentNew['children'] as $task_child_new){
+            if (isset($taskParentNew['children'])) {
+                foreach($taskParentNew['children'] as $taskChildNew){
+                    // バリデーション
+                    if ($this->form_validation->set_data($taskChildNew)->run('task_parent') === False){
+                        return False;
+                    }
                     // 子タスクの新規作成
-                    if($task_child_new['id'] < 0 && $task_child_new['parent_id'] > 0) {
+                    if ($taskChildNew['id'] < 0 && $taskChildNew['parent_id'] > 0) {
                         $data = [
-                            'name' => htmlspecialchars($task_child_new['name']),
-                            'comment' => htmlspecialchars($task_child_new['comment']),
-                            'check_flag' => (int)$task_child_new['check_flag'],
-                            'delete_flag' =>(int)$task_child_new['delete_flag'],
-                            'parent_id' => (int)$task_child_new['parent_id'],
+                            'name' => htmlspecialchars($taskChildNew['name']),
+                            'comment' => htmlspecialchars($taskChildNew['comment']),
+                            'check_flag' => (int)$taskChildNew['check_flag'],
+                            'delete_flag' =>(int)$taskChildNew['delete_flag'],
+                            'parent_id' => (int)$taskChildNew['parent_id'],
                         ];
                         $this->db->insert('tasks_child', $data);
                     // 子タスク削除 and 更新
                     } else {
                         $data = [
-                            'name' => htmlspecialchars($task_child_new['name']),
-                            'comment' => htmlspecialchars($task_child_new['comment']),
-                            'check_flag' => (int)$task_child_new['check_flag'],
-                            'delete_flag' => (int)$task_child_new['delete_flag'],
+                            'name' => htmlspecialchars($taskChildNew['name']),
+                            'comment' => htmlspecialchars($taskChildNew['comment']),
+                            'check_flag' => (int)$taskChildNew['check_flag'],
+                            'delete_flag' => (int)$taskChildNew['delete_flag'],
                         ];
-                        $this->db->where('id', $task_child_new['id']);
+                        $this->db->where('id', $taskChildNew['id']);
                         $this->db->update('tasks_child', $data);
                     }
     
@@ -85,27 +99,27 @@ class Home_model extends CI_Model {
             }
         
         }
-        return;
+        return True;
     }
 
 
-    private function structData($tasks_parent,$tasks_child){
+    private function structData($tasks_parent, $tasks_child){
         // タスクの構成を再編成
-        $tasks_all = [];
+        $tasksAll = [];
         // 親タスクそれぞれのオブジェクトに、関係する子タスクの配列を追加
-        foreach($tasks_parent as $task_parent){
-            $childrens=[];
-            foreach($tasks_child as $task_child){
-                if($task_child->parent_id==$task_parent->id){
+        foreach($tasks_parent as $task_parent) {
+            $childrens= [];
+            foreach($tasks_child as $task_child) {
+                if ($task_child->parent_id == $task_parent->id) {
                     // 親タスクに関係する子タスクを配列にまとめる
-                    $childrens[]=$task_child;
+                    $childrens[] = $task_child;
                 }
             }
-            $task_parent->children=$childrens;
-            $tasks_all[]=$task_parent;
+            $task_parent->children = $childrens;
+            $tasksAll[] = $task_parent;
         }
 
-        return $tasks_all;
+        return $tasksAll;
     }
 
 
