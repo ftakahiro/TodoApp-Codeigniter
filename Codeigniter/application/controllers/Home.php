@@ -30,10 +30,17 @@ class Home extends CI_Controller {
 
         // データの追加、更新、削除
         $this->load->model('Home_model');
-        $this->Home_model->processData($tasksAllNew);
+        $result=$this->Home_model->processData($tasksAllNew);
+        
+        if($result === True) {
+            $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['isOK'=>'全てのデータを保存しました。']));
+        } else {
+            $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['isOK'=>'バリデーションに失敗。タスク名は必須で75文字以内に収めてください。コメントは3000文字以内です。']));
+        }
 
-        $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode(['isOK'=>'ok']));
     }
 }
