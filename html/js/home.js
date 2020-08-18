@@ -6,8 +6,10 @@ $(function(){
         dataType:'json',
     })
     .done(function(data){
-        window.taskDataOrg=data;
-        window.taskData=data;
+        window.taskDataOrg = data.tasksAll;
+        window.taskData = data.tasksAll;
+        window.timestamp=data.timestamp;
+        console.log(timestamp);
         setParentTask(taskData);
         console.log(taskData);
     });
@@ -38,10 +40,10 @@ $(function(){
 
     // 親タスククリック時に子タスクを設置
     var parentFocused;
-    window.setChildTask=function setChildTask(parentId){
+    window.setChildTask = function setChildTask(parentId){
         // 子タスクを内包する親タスクを検索
         let targetParentTask;
-        targetParentTask=taskData.filter((item,index)=>{
+        targetParentTask = taskData.filter((item,index)=>{
             if(item.id == parentId) return true;
         })[0];
 
@@ -49,7 +51,7 @@ $(function(){
         if(parentFocused){
             $(parentFocused).css('background-color','white');
         }
-        parentFocused=`#row_parent_${targetParentTask.id}`
+        parentFocused =`#row_parent_${targetParentTask.id}`
         $(parentFocused).css('background-color','#FEE715');
         
         // 子タスクを設置
@@ -82,8 +84,8 @@ $(function(){
     }
 
     // 親タスクのコメントをセット
-    window.setParentComment=function setParentComment(id){
-        const dataSet=getParentRecord(id);
+    window.setParentComment = function setParentComment(id){
+        const dataSet = getParentRecord(id);
         $('.comment-header').text(dataSet.name);
         $('.comment').val(dataSet.comment);
         $('.comment').attr({
@@ -94,12 +96,12 @@ $(function(){
 
     // 子タスクのコメントをセット
     var childFocused;
-    window.setChildComment=function setChildComment(element){
+    window.setChildComment = function setChildComment(element){
         // 子タスクにフォーカスを当てる
         if(childFocused){
             $(childFocused).css('background-color','white');
         }
-        childFocused=`#row_child_${element.dataset.childId}`;
+        childFocused =`#row_child_${element.dataset.childId}`;
         $(childFocused).css('background-color','#FEE715');
 
         $('.comment-header').text(`${element.dataset.parent} > ${element.dataset.child}`);
@@ -114,7 +116,7 @@ $(function(){
     }
 
     // コメントが変更された時
-    window.updateComment=function updateComment(element){
+    window.updateComment = function updateComment(element){
         if(element.dataset.flag == "0"){
             console.log('parent comment changed');
             updateParentData(element.dataset.id,null,element.value);
@@ -130,7 +132,7 @@ $(function(){
 
 
     // 子タスク、チェック時の処理
-    window.childCheckEvent=function childCheckEvent(isChecked,childId,parentId){
+    window.childCheckEvent = function childCheckEvent(isChecked,childId,parentId){
         // jsonデータをアップデート
         updateChildData(childId,parentId,isChecked,null,null);
     };
@@ -141,9 +143,9 @@ $(function(){
         for(i=0;i<taskData.length;i++){
             if(taskData[i].id == id){
                 if(name){
-                    taskData[i].name=name;
+                    taskData[i].name = name;
                 }
-                taskData[i].comment=comment;
+                taskData[i].comment = comment;
                 break;
             }
         }
@@ -153,9 +155,9 @@ $(function(){
     function checkParent(parentId){
         for(i=0; i<taskData.length; i++){
             let numChildren;
-            let counter=0;
+            let counter = 0;
             if(taskData[i].id  ==  parentId){
-                numChildren=taskData[i].children.filter(function(el){return el.delete_flag != "1"}).length;
+                numChildren =taskData[i].children.filter(function(el){return el.delete_flag != "1"}).length;
                  // 子タスクの内チェックされている物の数を数える
                  taskData[i].children.forEach((element)=>{
                     if(element.delete_flag != "1" && element.check_flag == "1"){
@@ -164,9 +166,9 @@ $(function(){
                 });
                 // 親タスクのcheck_flagを更新
                 if(numChildren != 0 && numChildren == counter){
-                    taskData[i].check_flag="1";
+                    taskData[i].check_flag = "1";
                 } else {
-                    taskData[i].check_flag="0";
+                    taskData[i].check_flag = "0";
                 }
                 console.log(`alldata:${taskData}`);
                 break;
@@ -183,17 +185,17 @@ $(function(){
             if(elParent.id == parentId){
                 taskData[indexParent].children.map((elChild,indexChild)=>{
                     if(elChild.id == childId){
-                        if(isChecked!=null){
+                        if(isChecked != null){
                             // 子タスクのcheck_flagを更新
-                            taskData[indexParent].children[indexChild].check_flag=isChecked ? "1": "0";
+                            taskData[indexParent].children[indexChild].check_flag = isChecked ? "1": "0";
                         }
                         if(comment){
                             // 子タスクのcommentを更新
-                            taskData[indexParent].children[indexChild].comment=comment;
+                            taskData[indexParent].children[indexChild].comment = comment;
                         }
                         if(name){
                             // 子タスクのnameを更新
-                            taskData[indexParent].children[indexChild].name=name;
+                            taskData[indexParent].children[indexChild].name = name;
                         }
                     }
                 });
@@ -209,14 +211,14 @@ $(function(){
     }
 
     // 新規作成したタスクのidは一時的にマイナス値に設定 (例) -1,-2,-3....
-    let countParentNewTask=-1;
-    let countChildNewTask =-1;
+    let countParentNewTask = -1;
+    let countChildNewTask = -1;
     // タスク追加ボタンをクリック
-    window.makeTask=function makeTask(element){
+    window.makeTask = function makeTask(element){
         // 親タスクを追加
         if(element.dataset.flag == 0){
             console.log($('#task_name').val());
-            const data={id:countParentNewTask,name:$('#task_name').val(),check_flag:'0',comment:$('#task_comment').val(),delete_flag:'0',children:[]};
+            const data = {id:countParentNewTask,name:$('#task_name').val(),check_flag:'0',comment:$('#task_comment').val(),delete_flag:'0',children:[]};
             taskData.push(data);
             countParentNewTask--;
             console.log(taskData);
@@ -226,7 +228,7 @@ $(function(){
         }else if(element.dataset.flag == 1){
             console.log('ok');
             const data={id:countChildNewTask,name:$('#task_name').val(),parent_id:element.dataset.parentId,check_flag:'0',comment:$('#task_comment').val(),delete_flag:'0'};
-            for(i=0;i<taskData.length;i++){
+            for(i = 0; i < taskData.length; i++){
                 if(taskData[i].id == element.dataset.parentId){
                     // 親タスクに新規作成した子タスクを追加
                     taskData[i].children.push(data);
@@ -245,7 +247,7 @@ $(function(){
 
     }
     // タスク編集ボタンをクリック
-    window.editTask=function editTask(element){
+    window.editTask = function editTask(element){
         // 親タスクを編集
         if(element.dataset.flag == 0){
             updateParentData(element.dataset.parentId,$('#task_name').val(),$('#task_comment').val());
@@ -260,16 +262,16 @@ $(function(){
     }
     // データ抽出
     function getParentRecord(id){
-        for(i=0;i<taskData.length;i++){
+        for(i = 0; i < taskData.length; i++){
             if(taskData[i].id == id){
                 return taskData[i];
             }
         }
     }
     function getChildRecord(parentId,childId){
-        for(ip=0; ip<taskData.length;ip++){
+        for(ip = 0; ip<taskData.length; ip++){
             if(taskData[ip].id == parentId){
-                for(ic=0; ic<taskData[ip].children.length; ic++){
+                for(ic = 0; ic < taskData[ip].children.length; ic++){
                     if(taskData[ip].children[ic].id == childId){
                         return taskData[ip].children[ic];
                     }
@@ -280,38 +282,39 @@ $(function(){
     }
 
     // 親タスクoption表示の切替
-    window.toggleParentOption=function toggleParentOption(parentId){
-        const id=`#optionParent${parentId}`;
+    window.toggleParentOption = function toggleParentOption(parentId){
+        const id = `#optionParent${parentId}`;
         $(id).toggle();
 
     }
     // 子タスクoption表示の切替
-    window.toggleChildOption=function toggleChildOption(childId){
-        const id=`#optionChild${childId}`;
+    window.toggleChildOption = function toggleChildOption(childId){
+        const id = `#optionChild${childId}`;
         $(id).toggle();
 
     }
 
     // タスク削除
-    window.deleteParentTask=function deleteParentTask(parentId){
-        for(i=0; i<taskData.length; i++){
+    window.deleteParentTask = function deleteParentTask(parentId){
+        for(i = 0; i<taskData.length; i++){
             if(taskData[i].id == parentId){
                 taskData[i].delete_flag = "1";
                 // 内包する子タスク全てを削除
-                for(ic=0; ic<taskData[i].children.length; ic++){
-                    taskData[i].children[ic].delete_flag="1";
+                for(ic = 0; ic<taskData[i].children.length; ic++){
+                    taskData[i].children[ic].delete_flag = "1";
                 }
                 break;
             }
         }
         $("#tasks_child").empty();
+        $(".comment").val("");
         setParentTask(taskData);
         console.log(taskData);
     }
-    window.deleteChildTask=function deleteChildTask(parentId,childId){
-        for(pi=0; pi<taskData.length; pi++){
+    window.deleteChildTask = function deleteChildTask(parentId,childId){
+        for(pi = 0; pi<taskData.length; pi++){
             if(taskData[pi].id == parentId){
-                for(ci=0; ci<taskData[pi].children.length; ci++ ){
+                for(ci = 0; ci < taskData[pi].children.length; ci++ ){
                     if(taskData[pi].children[ci].id == childId){
                         taskData[pi].children[ci].delete_flag = 1;
                         break;
@@ -323,11 +326,12 @@ $(function(){
         checkParent(parentId);
         setParentTask(taskData);
         setChildTask(parentId);
+        $(".comment").val("");
 
     }
    
     // タスク作成,編集モーダルを開く openModal(追加、編集を判別する,親タスク、子タスクを判別,parentId,childId)
-    window.openModal=function openModal(typeFlag,flag,parentId,childId){
+    window.openModal = function openModal(typeFlag,flag,parentId,childId){
         // 新規タスク追加
         if(typeFlag == 0){
             console.log(parentId);
@@ -350,7 +354,7 @@ $(function(){
             // 子タスクを作成するモーダル
             }else if(flag == 1){
                 if(parentId){
-                    const data=getParentRecord(parentId);
+                    const data = getParentRecord(parentId);
                     console.log(data);
                     $('#task_name').val('');
                     $('#task_comment').val('');
@@ -392,7 +396,7 @@ $(function(){
             // 子タスクを編集するモーダル
             }else if(flag == 1){
                 if(parentId){
-                    const data=getChildRecord(parentId,childId);
+                    const data = getChildRecord(parentId,childId);
                     console.log(data);
                     $('#task_name').val(data.name);
                     $('#task_comment').val(data.comment);
@@ -419,22 +423,22 @@ $(function(){
     $('#modal_overlay').click(()=>{
         closeModal()
     });
-    window.closeModal=function closeModal(){
+    window.closeModal = function closeModal(){
         $('#modal_overlay').css('display','none');
         $('#modal_make_task').css('display','none');
     }
 
 
     // データをバックエンドに送信
-    window.submitData= function submitData(){
+    window.submitData = function submitData(){
         $.ajax({
             url: "/home/dataStore",
             type:'POST',
             dataType: 'json',
-            data: {taskDataNew: taskData, taskDataOrg: taskDataOrg},
+            data: {taskDataNew: taskData, taskDataOrg: taskDataOrg,timestamp: timestamp},
         }).done(function(data) {
-            alert('全ての変更が保存されました。');
             console.log(data);
+            alert(data.isOK);
             location.reload();
         }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
             console.log(errorThrown);

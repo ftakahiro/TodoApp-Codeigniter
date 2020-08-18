@@ -14,26 +14,49 @@ class Home extends CI_Controller {
         // DBからタスク情報を取得
         $this->load->model('Home_model');
         $tasksAll = $this->Home_model->getTaskData();
-
+        $timestamp = time();
+        
+        $data=array(
+            'tasksAll' => $tasksAll,
+            'timestamp'=> $timestamp,
+        );
         $this->output
         ->set_content_type('application/json')
-        ->set_output(json_encode($tasksAll));
+        ->set_output(json_encode($data));
     }
     
 
     public function dataStore()
     {
-        // フロントに渡した時と同じタスクデータ
-        $tasks_all_org=$this->input->post('taskDataOrg');
         // 変更されたタスクデータ
-        $tasksAllNew=$this->input->post('taskDataNew');
+        $tasksAllNew = $this->input->post('taskDataNew');
+        $timestamp = $this->input->post('timestamp');
 
-        // データの追加、更新、削除
+        // 楽観ロックの実装
         $this->load->model('Home_model');
-        $this->Home_model->processData($tasksAllNew);
+        $timestampNew = $this->Home_model->getUpdatedAt();
+        if ( $timestampNew = 0 || $timestampNew <= date("Y-m-d H:i:s",$timestamp)) {
+            // データの追加、更新、削除
+            $this->load->model('Home_model');
+            $result=$this->Home_model->processData($tasksAllNew);
+            
+            if($result === True) {
+                $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['isOK'=>'全てのデータを保存しました。']));
+            } else {
+                $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['isOK'=>'バリデーションに失敗。タスク名は必須で75文字以内に収めてください。コメントは3000文字以内です。']));
+            }
+        } else {
+            $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['isOK'=>'データが他のユーザによって更新されています。']));
+        }
 
-        $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode(['isOK'=>'ok']));
+
+
+
     }
 }
