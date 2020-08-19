@@ -1,12 +1,14 @@
 <?php
+require_once(dirname(__FILE__)."/../repositories/taskRepository.php");
 
 class Home_model extends CI_Model {
 
     public function getTaskData()
     {
         // DBからタスク情報を取得
-        $tasksParent = $this->db->query('select * from tasks_parent')->result();
-        $tasksChild  = $this->db->query('select * from tasks_child')->result();
+        $reposiotory = new taskRepository();
+        $tasksParent = $reposiotory->getAllParent();
+        $tasksChild = $reposiotory->getAllChild();
         
         // タスクの構成を再編成
         $tasksAll = $this->structData($tasksParent,$tasksChild);
@@ -17,8 +19,9 @@ class Home_model extends CI_Model {
     // 楽観ロック用にデータの中で最も新しいものを取得
     public function getUpdatedAt()
     {
-        $taskParent = $this->db->query('SELECT * FROM tasks_parent ORDER BY updated_at DESC LIMIT 1')->row();
-        $taskChild  = $this->db->query('SELECT * FROM tasks_child  ORDER BY updated_at DESC LIMIT 1')->row();
+        $reposiotory = new taskRepository();
+        $taskParent = $reposiotory->getNewParentTop();
+        $taskChild  = $reposiotory->getNewChildTop();
 
         if (!isset($taskParent) && !isset($taskChild)) {
             return 0;
@@ -54,8 +57,8 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                 ];
 
-                $this->db->insert('tasks_parent',$data);
-                $insertedId = $this->db->insert_id();
+                $reposiotory = new taskRepository();
+                $insertedId = $reposiotory->insertParent($data);
 
                 // 新規作成された親タスクに子タスクも作成されていた場合
                 if (isset($taskParentNew['children'])) {
@@ -71,7 +74,8 @@ class Home_model extends CI_Model {
                             'delete_flag' => (int)$childIncluded['delete_flag'],
                             'parent_id' => $insertedId, //新規作成した親タスクのID
                         ];
-                        $this->db->insert('tasks_child', $data);
+                        $reposiotory->insertChild($data);
+                        
                     }
                 }
           
@@ -85,8 +89,8 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                     'updated_at' => date("Y-m-d H:i:s", time()),
                 ];
-                $this->db->where('id', $taskParentNew['id']);
-                $this->db->update('tasks_parent', $data);
+                $reposiotory = new taskRepository();
+                $reposiotory->updateParentById($taskParentNew['id'],$data);
             }
 
             if (isset($taskParentNew['children'])) {
@@ -105,7 +109,8 @@ class Home_model extends CI_Model {
                             'parent_id' => (int)$taskChildNew['parent_id'],
                             'updated_at' => date("Y-m-d H:i:s", time()),
                         ];
-                        $this->db->insert('tasks_child', $data);
+                        $reposiotory = new taskRepository();
+                        $insertedId = $reposiotory->insertChild($data);
                     // 子タスク削除 and 更新
                     } else {
                         $data = [
@@ -115,8 +120,8 @@ class Home_model extends CI_Model {
                             'delete_flag' => (int)$taskChildNew['delete_flag'],
                             'updated_at' => date("Y-m-d H:i:s", time()),
                         ];
-                        $this->db->where('id', $taskChildNew['id']);
-                        $this->db->update('tasks_child', $data);
+                        $reposiotory = new taskRepository();
+                        $insertedId = $reposiotory->updateChildById($taskChildNew['id'], $data);
                     }
     
                 }
