@@ -34,8 +34,8 @@ input[type=checkbox]:checked + label:before{
 }
 
 header{
-    color: white;
-    background-color:#222222;
+    color: #222222;
+    background-color:#FEE715;
 }
 .header-content{
     height:4rem;
