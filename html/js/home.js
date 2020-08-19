@@ -1,4 +1,6 @@
 $(function(){
+    const FLAG_ON = 1;
+    const FLAG_OFF = 0;
     // タスクデータを取得
     $.ajax({
         url:'/home/getdata',
@@ -18,18 +20,19 @@ $(function(){
     function setParentTask(taskData){
         $("#tasks_parent").empty();
         taskData.forEach((element)=>{
-            if(element.delete_flag != 1){
+            if(Number(element.delete_flag) !== FLAG_ON){
+                console.log(typeof element.delete_flag);
                 let rowTask=`
                 <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}" onclick="setChildTask(${element.id});setParentComment(${element.id})">
                     <div class="row-task-name">
-                        <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(element.check_flag == "1")? 'checked="checked"':''}>
+                        <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(element.check_flag === FLAG_ON)? 'checked="checked"':''}>
                         <label for="parent_${element.id}">${element.name}</label>
                     </div>
                     <div class="area-option">
                         <img class="icon-option" src="/img/option.png" alt="option icon" onclick="toggleParentOption(${element.id})">
                         <div class="options" id="optionParent${element.id}">
                             <div data-parent-id="${element.id}" onclick="deleteParentTask(${element.id})">削除</div>
-                            <div data-parent-id="${element.id}" onclick="openModal(1,0,${element.id},null)">編集</div>
+                            <div data-parent-id="${element.id}" onclick="openModal(${FLAG_ON},${FLAG_OFF},${element.id},null)">編集</div>
                         </div>
                     </div>
                 </div>`;
@@ -44,7 +47,7 @@ $(function(){
         // 子タスクを内包する親タスクを検索
         let targetParentTask;
         targetParentTask = taskData.filter((item,index)=>{
-            if(item.id == parentId) return true;
+            if(Number(item.id) === Number(parentId)) return true;
         })[0];
 
         // 親タスクにフォーカスを当てる
@@ -57,18 +60,18 @@ $(function(){
         // 子タスクを設置
         $("#tasks_child").empty();
         targetParentTask.children.forEach((element)=>{
-            if(element.delete_flag != 1){
+            if(Number(element.delete_flag) !== FLAG_ON){
                 let rowTask=`
                     <div id="row_child_${element.id}" class="row-task" data-parent="${targetParentTask.name}" data-child="${element.name}" data-child-id="${element.id}" data-parent-id="${targetParentTask.id}" data-comment="${element.comment}"  onclick="setChildComment(this)">
                         <div class="row-task-name">
-                            <input class="child_checkbox" id="child_${element.id}" type="checkbox" ${(element.check_flag == "1")? 'checked="checked"':''} data-id="${element.id}" onchange="childCheckEvent(this.checked,${element.id},${element.parent_id})">
+                            <input class="child_checkbox" id="child_${element.id}" type="checkbox" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"':''} data-id="${element.id}" onchange="childCheckEvent(this.checked,${element.id},${element.parent_id})">
                             <label for="child_${element.id}">${element.name}</label>
                         </div>
                         <div class="area-option">
                             <img class="icon-option" src="/img/option.png" alt="option icon" onclick="toggleChildOption(${element.id})">
                             <div class="options" id="optionChild${element.id}">
                                 <div data-parent-id="${element.id}" onclick="deleteChildTask(${targetParentTask.id},${element.id})">削除</div>
-                                <div data-parent-id="${element.id}" onclick="openModal(1,1,${targetParentTask.id},${element.id})">編集</div>
+                                <div data-parent-id="${element.id}" onclick="openModal(${FLAG_ON}, ${FLAG_ON}, ${targetParentTask.id}, ${element.id})">編集</div>
                             </div>
                         </div>
                     </div>`;
@@ -89,8 +92,8 @@ $(function(){
         $('.comment-header').text(dataSet.name);
         $('.comment').val(dataSet.comment);
         $('.comment').attr({
-            'data-flag':'0', // 親タスクのコメントであることを示すフラグ
-            'data-id':`${dataSet.id}`,
+            'data-flag': FLAG_OFF, // 親タスクのコメントであることを示すフラグ
+            'data-id': `${dataSet.id}`,
         });
     }
 
@@ -107,7 +110,7 @@ $(function(){
         $('.comment-header').text(`${element.dataset.parent} > ${element.dataset.child}`);
         $('.comment').val(element.dataset.comment);
         $('.comment').attr({
-            'data-flag':'1', // 子タスクのコメントであることを示すフラグ
+            'data-flag': FLAG_ON, // 子タスクのコメントであることを示すフラグ
             'data-child-id':`${element.dataset.childId}`,
             'data-parent-id':`${element.dataset.parentId}`,
         });
@@ -117,11 +120,11 @@ $(function(){
 
     // コメントが変更された時
     window.updateComment = function updateComment(element){
-        if(element.dataset.flag == "0"){
+        if(Number(element.dataset.flag) === FLAG_OFF){
             console.log('parent comment changed');
             updateParentData(element.dataset.id,null,element.value);
         }
-        if(element.dataset.flag == "1"){
+        if(Number(element.dataset.flag) === FLAG_ON){
             console.log('child comment changed');
             console.log(element);
             updateChildData(element.dataset.childId,element.dataset.parentId,null,null,element.value);
@@ -141,7 +144,7 @@ $(function(){
     function updateParentData(id,name,comment){
         console.log(`${id},${comment}`);
         for(i=0;i<taskData.length;i++){
-            if(taskData[i].id == id){
+            if(Number(taskData[i].id) === Number(id)){
                 if(name){
                     taskData[i].name = name;
                 }
@@ -156,19 +159,19 @@ $(function(){
         for(i=0; i<taskData.length; i++){
             let numChildren;
             let counter = 0;
-            if(taskData[i].id  ==  parentId){
-                numChildren =taskData[i].children.filter(function(el){return el.delete_flag != "1"}).length;
+            if(Number(taskData[i].id)  ===  Number(parentId)){
+                numChildren =taskData[i].children.filter(function(el){return Number(el.delete_flag) !== FLAG_ON}).length;
                  // 子タスクの内チェックされている物の数を数える
                  taskData[i].children.forEach((element)=>{
-                    if(element.delete_flag != "1" && element.check_flag == "1"){
+                    if(Number(element.delete_flag) !== FLAG_ON && Number(element.check_flag) === FLAG_ON){
                         counter += 1;
                     }
                 });
                 // 親タスクのcheck_flagを更新
-                if(numChildren != 0 && numChildren == counter){
-                    taskData[i].check_flag = "1";
+                if(numChildren !== 0 && numChildren === counter){
+                    taskData[i].check_flag = FLAG_ON;
                 } else {
-                    taskData[i].check_flag = "0";
+                    taskData[i].check_flag = FLAG_OFF;
                 }
                 console.log(`alldata:${taskData}`);
                 break;
@@ -182,12 +185,12 @@ $(function(){
     // 子タスクデータのアップデート
     function updateChildData(childId, parentId, isChecked, name,comment){
         taskData.forEach((elParent, indexParent)=>{
-            if(elParent.id == parentId){
+            if(Number(elParent.id) === Number(parentId)){
                 taskData[indexParent].children.map((elChild,indexChild)=>{
-                    if(elChild.id == childId){
+                    if(Number(elChild.id) == Number(childId)){
                         if(isChecked != null){
                             // 子タスクのcheck_flagを更新
-                            taskData[indexParent].children[indexChild].check_flag = isChecked ? "1": "0";
+                            taskData[indexParent].children[indexChild].check_flag = isChecked ? FLAG_ON: FLAG_OFF;
                         }
                         if(comment){
                             // 子タスクのcommentを更新
@@ -216,20 +219,20 @@ $(function(){
     // タスク追加ボタンをクリック
     window.makeTask = function makeTask(element){
         // 親タスクを追加
-        if(element.dataset.flag == 0){
+        if(Number(element.dataset.flag) === FLAG_OFF){
             console.log($('#task_name').val());
-            const data = {id:countParentNewTask,name:$('#task_name').val(),check_flag:'0',comment:$('#task_comment').val(),delete_flag:'0',children:[]};
+            const data = {id:countParentNewTask, name:$('#task_name').val(), check_flag: FLAG_OFF, comment:$('#task_comment').val(),delete_flag: FLAG_OFF, children:[]};
             taskData.push(data);
             countParentNewTask--;
             console.log(taskData);
             setParentTask(taskData);
             closeModal();
         // 子タスクを追加
-        }else if(element.dataset.flag == 1){
+        }else if(Number(element.dataset.flag) === FLAG_ON){
             console.log('ok');
-            const data={id:countChildNewTask,name:$('#task_name').val(),parent_id:element.dataset.parentId,check_flag:'0',comment:$('#task_comment').val(),delete_flag:'0'};
+            const data={id:countChildNewTask, name:$('#task_name').val(), parent_id:element.dataset.parentId, check_flag:FLAG_OFF, comment:$('#task_comment').val(), delete_flag:FLAG_OFF};
             for(i = 0; i < taskData.length; i++){
-                if(taskData[i].id == element.dataset.parentId){
+                if(Number(taskData[i].id) === Number(element.dataset.parentId)){
                     // 親タスクに新規作成した子タスクを追加
                     taskData[i].children.push(data);
                     countChildNewTask--;
@@ -249,12 +252,12 @@ $(function(){
     // タスク編集ボタンをクリック
     window.editTask = function editTask(element){
         // 親タスクを編集
-        if(element.dataset.flag == 0){
+        if(Number(element.dataset.flag) === FLAG_OFF){
             updateParentData(element.dataset.parentId,$('#task_name').val(),$('#task_comment').val());
             setParentTask(taskData);
             closeModal();
         // 子タスクを編集
-        }else if(element.dataset.flag == 1){
+        }else if(Number(element.dataset.flag) === FLAG_ON){
             updateChildData(element.dataset.childId,element.dataset.parentId,null,$('#task_name').val(),$('#task_comment').val());
             closeModal();
         }
@@ -263,16 +266,16 @@ $(function(){
     // データ抽出
     function getParentRecord(id){
         for(i = 0; i < taskData.length; i++){
-            if(taskData[i].id == id){
+            if(Number(taskData[i].id) === id){
                 return taskData[i];
             }
         }
     }
     function getChildRecord(parentId,childId){
         for(ip = 0; ip<taskData.length; ip++){
-            if(taskData[ip].id == parentId){
+            if(Number(taskData[ip].id) === Number(parentId)){
                 for(ic = 0; ic < taskData[ip].children.length; ic++){
-                    if(taskData[ip].children[ic].id == childId){
+                    if(Number(taskData[ip].children[ic].id) === Number(childId)){
                         return taskData[ip].children[ic];
                     }
                 }
@@ -297,11 +300,11 @@ $(function(){
     // タスク削除
     window.deleteParentTask = function deleteParentTask(parentId){
         for(i = 0; i<taskData.length; i++){
-            if(taskData[i].id == parentId){
-                taskData[i].delete_flag = "1";
+            if(Number(taskData[i].id) === Number(parentId)){
+                taskData[i].delete_flag = FLAG_ON;
                 // 内包する子タスク全てを削除
                 for(ic = 0; ic<taskData[i].children.length; ic++){
-                    taskData[i].children[ic].delete_flag = "1";
+                    taskData[i].children[ic].delete_flag = FLAG_ON;
                 }
                 break;
             }
@@ -313,10 +316,10 @@ $(function(){
     }
     window.deleteChildTask = function deleteChildTask(parentId,childId){
         for(pi = 0; pi<taskData.length; pi++){
-            if(taskData[pi].id == parentId){
+            if(Number(taskData[pi].id) === Number(parentId)){
                 for(ci = 0; ci < taskData[pi].children.length; ci++ ){
-                    if(taskData[pi].children[ci].id == childId){
-                        taskData[pi].children[ci].delete_flag = 1;
+                    if(Number(taskData[pi].children[ci].id) === Number(childId)){
+                        taskData[pi].children[ci].delete_flag = FLAG_ON;
                         break;
                     }
                 }
@@ -333,10 +336,10 @@ $(function(){
     // タスク作成,編集モーダルを開く openModal(追加、編集を判別する,親タスク、子タスクを判別,parentId,childId)
     window.openModal = function openModal(typeFlag,flag,parentId,childId){
         // 新規タスク追加
-        if(typeFlag == 0){
+        if(typeFlag === FLAG_OFF){
             console.log(parentId);
             // 親タスクを作成するモーダル
-            if(flag == 0){
+            if(flag === FLAG_OFF){
                 $('#task_name').val('');
                 $('#task_comment').val('');
                 $(".make-task-header").text('新規親タスク作成');
@@ -346,13 +349,13 @@ $(function(){
                 $('#task_comment').val('');
                 $('.bt-task-add').text('追加');
                 $('.bt-task-add').attr({
-                    'onclick':'makeTask(this)',
+                    'onclick': 'makeTask(this)',
                     // 親タスクを追加することを示すflag
-                    'data-flag':0,
+                    'data-flag': FLAG_OFF,
                 });
     
             // 子タスクを作成するモーダル
-            }else if(flag == 1){
+            }else if(flag === FLAG_ON){
                 if(parentId){
                     const data = getParentRecord(parentId);
                     console.log(data);
@@ -365,7 +368,7 @@ $(function(){
                     $('.bt-task-add').attr({
                         'onclick':'makeTask(this)',
                         //  子タスクを追加することを示すフラグ
-                        'data-flag':1,
+                        'data-flag': FLAG_ON,
                         'data-parent-id': parentId,
                     });
                 }else{
@@ -375,10 +378,10 @@ $(function(){
             }
         }
         // タスク編集用モーダル
-        if(typeFlag == 1){
+        if(typeFlag === FLAG_ON){
             console.log(parentId);
             // 親タスクを編集するモーダル
-            if(flag == 0){
+            if(flag === FLAG_OFF){
                 const data=getParentRecord(parentId);
                 $('#task_name').val(data.name);
                 $('#task_comment').val(data.comment);
@@ -388,13 +391,13 @@ $(function(){
                 $('.bt-task-add').text('編集');
                 // 親タスクを追加することを示すflag
                 $('.bt-task-add').attr({
-                    'onclick':'editTask(this)',
-                    'data-flag':0,
-                    'data-parent-id':parentId,
+                    'onclick': 'editTask(this)',
+                    'data-flag': FLAG_OFF,
+                    'data-parent-id': parentId,
                 });
 
             // 子タスクを編集するモーダル
-            }else if(flag == 1){
+            }else if(flag === FLAG_ON){
                 if(parentId){
                     const data = getChildRecord(parentId,childId);
                     console.log(data);
@@ -407,7 +410,7 @@ $(function(){
                     $('.bt-task-add').attr({
                         'onclick':'editTask(this)',
                         //  子タスクを追加することを示すフラグ
-                        'data-flag':1,
+                        'data-flag': FLAG_ON,
                         'data-parent-id': parentId,
                         'data-child-id':childId,
                     });
