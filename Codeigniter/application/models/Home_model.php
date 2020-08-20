@@ -1,12 +1,12 @@
 <?php
-require_once(dirname(__FILE__)."/../repositories/taskRepository.php");
+require_once(dirname(__FILE__)."/../repositories/Task_repository.php");
 
 class Home_model extends CI_Model {
 
     public function getTaskData()
     {
         // DBからタスク情報を取得
-        $reposiotory = new taskRepository();
+        $reposiotory = new Task_repository();
         $tasksParent = $reposiotory->getAllParent();
         $tasksChild = $reposiotory->getAllChild();
         
@@ -19,7 +19,7 @@ class Home_model extends CI_Model {
     // 楽観ロック用にデータの中で最も新しいものを取得
     public function getUpdatedAt()
     {
-        $reposiotory = new taskRepository();
+        $reposiotory = new Task_repository();
         $taskParent = $reposiotory->getNewParentTop();
         $taskChild  = $reposiotory->getNewChildTop();
 
@@ -57,7 +57,7 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                 ];
 
-                $reposiotory = new taskRepository();
+                $reposiotory = new Task_repository();
                 $insertedId = $reposiotory->insertParent($data);
 
                 // 新規作成された親タスクに子タスクも作成されていた場合
@@ -89,7 +89,7 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                     'updated_at' => date("Y-m-d H:i:s", time()),
                 ];
-                $reposiotory = new taskRepository();
+                $reposiotory = new Task_repository();
                 $reposiotory->updateParentById($taskParentNew['id'],$data);
             }
 
@@ -120,7 +120,7 @@ class Home_model extends CI_Model {
                             'delete_flag' => (int)$taskChildNew['delete_flag'],
                             'updated_at' => date("Y-m-d H:i:s", time()),
                         ];
-                        $reposiotory = new taskRepository();
+                        $reposiotory = new Task_repository();
                         $insertedId = $reposiotory->updateChildById($taskChildNew['id'], $data);
                     }
     
