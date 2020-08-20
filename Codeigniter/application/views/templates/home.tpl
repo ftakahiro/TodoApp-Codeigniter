@@ -25,7 +25,7 @@
             <div class="tasks-header"></div>
             <div id="tasks_child"></div>
             <div class="tasks-footer">
-                <button id="bt_add_child_task" class="bt-add" onclick="openModal(0, 1, this.dataset.parentId)">追加</button>
+                <button id="bt_add_child_task" class="bt-add" onclick="openModal(0, 1, this.dataset.parentId, null)">追加</button>
             </div>
         </div>
     </div>

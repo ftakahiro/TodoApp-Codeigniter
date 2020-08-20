@@ -10,7 +10,7 @@ $(function(){
     .done(function(data){
         window.taskDataOrg = data.tasksAll;
         window.taskData = data.tasksAll;
-        window.timestamp=data.timestamp;
+        window.timestamp = data.timestamp;
         console.log(timestamp);
         setParentTask(taskData);
         console.log(taskData);
@@ -19,10 +19,10 @@ $(function(){
     // 親タスクを設置
     function setParentTask(taskData){
         $("#tasks_parent").empty();
-        taskData.forEach((element)=>{
+        taskData.forEach((element) => {
             if(Number(element.delete_flag) !== FLAG_ON){
                 console.log(typeof element.delete_flag);
-                let rowTask=`
+                let rowTask = `
                 <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}" onclick="setChildTask(${element.id});setParentComment(${element.id})">
                     <div class="row-task-name">
                         <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(element.check_flag === FLAG_ON)? 'checked="checked"': ''}>
@@ -46,7 +46,7 @@ $(function(){
     window.setChildTask = function setChildTask(parentId){
         // 子タスクを内包する親タスクを検索
         let targetParentTask;
-        targetParentTask = taskData.filter((item, index)=>{
+        targetParentTask = taskData.filter((item, index) => {
             if(Number(item.id) === Number(parentId)) return true;
         })[0];
 
@@ -59,9 +59,9 @@ $(function(){
         
         // 子タスクを設置
         $("#tasks_child").empty();
-        targetParentTask.children.forEach((element)=>{
+        targetParentTask.children.forEach((element) => {
             if(Number(element.delete_flag) !== FLAG_ON){
-                let rowTask=`
+                let rowTask = `
                     <div id="row_child_${element.id}" class="row-task" data-parent="${targetParentTask.name}" data-child="${element.name}" data-child-id="${element.id}" data-parent-id="${targetParentTask.id}" data-comment="${element.comment}"  onclick="setChildComment(this)">
                         <div class="row-task-name">
                             <input class="child_checkbox" id="child_${element.id}" type="checkbox" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''} data-id="${element.id}" onchange="childCheckEvent(this.checked, ${element.id}, ${element.parent_id})">
@@ -184,9 +184,9 @@ $(function(){
 
     // 子タスクデータのアップデート
     function updateChildData(childId, parentId, isChecked, name,comment){
-        taskData.forEach((elParent, indexParent)=>{
+        taskData.forEach((elParent, indexParent) => {
             if(Number(elParent.id) === Number(parentId)){
-                taskData[indexParent].children.map((elChild, indexChild)=>{
+                taskData[indexParent].children.map((elChild, indexChild) => {
                     if(Number(elChild.id) == Number(childId)){
                         if(isChecked != null){
                             // 子タスクのcheck_flagを更新
@@ -230,7 +230,7 @@ $(function(){
         // 子タスクを追加
         }else if(Number(element.dataset.flag) === FLAG_ON){
             console.log('ok');
-            const data={id: countChildNewTask, name: $('#task_name').val(), parent_id: element.dataset.parentId, check_flag: FLAG_OFF, comment: $('#task_comment').val(), delete_flag: FLAG_OFF};
+            const data = {id: countChildNewTask, name: $('#task_name').val(), parent_id: element.dataset.parentId, check_flag: FLAG_OFF, comment: $('#task_comment').val(), delete_flag: FLAG_OFF};
             for(i = 0; i < taskData.length; i++){
                 if(Number(taskData[i].id) === Number(element.dataset.parentId)){
                     // 親タスクに新規作成した子タスクを追加
@@ -424,7 +424,7 @@ $(function(){
     }
 
     // モーダルを閉じる
-    $('#modal_overlay').click(()=>{
+    $('#modal_overlay').click(() => {
         closeModal()
     });
     window.closeModal = function closeModal(){
