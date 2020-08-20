@@ -1,6 +1,6 @@
 <?php
 
-class taskRepository extends CI_Model {
+class Task_repository extends CI_Model {
 
     public function getAllParent() 
     {

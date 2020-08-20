@@ -109,7 +109,7 @@ class Home_model extends CI_Model {
                             'parent_id' => (int)$taskChildNew['parent_id'],
                             'updated_at' => date("Y-m-d H:i:s", time()),
                         ];
-                        $reposiotory = new taskRepository();
+                        $reposiotory = new Task_repository();
                         $insertedId = $reposiotory->insertChild($data);
                     // 子タスク削除 and 更新
                     } else {
