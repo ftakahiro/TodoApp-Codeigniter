@@ -50,4 +50,12 @@ class Task_repository extends CI_Model {
         $this->db->update('tasks_child', $data);
     }
 
+    public function transactionStart() {
+        $this->db->trans_start();
+    }
+
+    public function transactionComplete() {
+        $this->db->trans_complete();
+    }
+
 }

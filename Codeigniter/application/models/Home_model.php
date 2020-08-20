@@ -42,6 +42,9 @@ class Home_model extends CI_Model {
     {
         $this->load->library('form_validation');
         // 新規作成
+        $reposiotory = new Task_repository();
+        $reposiotory->transactionStart();
+
         foreach($tasksAllNew as $taskParentNew) {
             // バリデーション
             if (!$this->form_validation->set_data($taskParentNew)->run('task_parent')) {
@@ -57,7 +60,6 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                 ];
 
-                $reposiotory = new Task_repository();
                 $insertedId = $reposiotory->insertParent($data);
 
                 // 新規作成された親タスクに子タスクも作成されていた場合
@@ -89,7 +91,6 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                     'updated_at' => date("Y-m-d H:i:s", time()),
                 ];
-                $reposiotory = new Task_repository();
                 $reposiotory->updateParentById($taskParentNew['id'],$data);
             }
 
@@ -109,7 +110,6 @@ class Home_model extends CI_Model {
                             'parent_id' => (int)$taskChildNew['parent_id'],
                             'updated_at' => date("Y-m-d H:i:s", time()),
                         ];
-                        $reposiotory = new Task_repository();
                         $insertedId = $reposiotory->insertChild($data);
                     // 子タスク削除 and 更新
                     } else {
@@ -120,7 +120,6 @@ class Home_model extends CI_Model {
                             'delete_flag' => (int)$taskChildNew['delete_flag'],
                             'updated_at' => date("Y-m-d H:i:s", time()),
                         ];
-                        $reposiotory = new Task_repository();
                         $insertedId = $reposiotory->updateChildById($taskChildNew['id'], $data);
                     }
     
@@ -128,6 +127,7 @@ class Home_model extends CI_Model {
             }
         
         }
+        $reposiotory->transactionComplete();
         return True;
     }
 
