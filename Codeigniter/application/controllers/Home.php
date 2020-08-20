@@ -16,9 +16,9 @@ class Home extends CI_Controller {
         $tasksAll = $this->Home_model->getTaskData();
         $timestamp = $this->Home_model->getUpdatedAt();
         
-        $data=array(
+        $data = array(
             'tasksAll' => $tasksAll,
-            'timestamp'=> $timestamp,
+            'timestamp' => $timestamp,
         );
         $this->output
         ->set_content_type('application/json')
@@ -38,21 +38,21 @@ class Home extends CI_Controller {
         if ( $timestampNew = 0 || $timestampNew <= $timestamp) {
             // データの追加、更新、削除
             $this->load->model('Home_model');
-            $result=$this->Home_model->processData($tasksAllNew);
+            $result = $this->Home_model->processData($tasksAllNew);
             
             if($result === True) {
                 $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['isOK'=>'全てのデータを保存しました。']));
+                ->set_output(json_encode(['isOK' => '全てのデータを保存しました。']));
             } else {
                 $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['isOK'=>'バリデーションに失敗。タスク名は必須で75文字以内に収めてください。コメントは3000文字以内です。']));
+                ->set_output(json_encode(['isOK' => 'バリデーションに失敗。タスク名は必須で75文字以内に収めてください。コメントは3000文字以内です。']));
             }
         } else {
             $this->output
             ->set_content_type('application/json')
-            ->set_output(json_encode(['isOK'=>'データが他のユーザによって更新されています。']));
+            ->set_output(json_encode(['isOK' => 'データが他のユーザによって更新されています。']));
         }
     }
 }
