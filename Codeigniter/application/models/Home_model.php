@@ -139,7 +139,11 @@ class Home_model extends CI_Model {
         foreach($tasks_parent as $task_parent) {
             $childrens= [];
             foreach($tasks_child as $task_child) {
-                if ($task_child->parent_id == $task_parent->id) {
+                if ($task_child->parent_id < $task_parent->id) {
+                    continue;
+                } elseif ($task_child->parent_id > $task_parent->id) {
+                    break;
+                } else {
                     // 親タスクに関係する子タスクを配列にまとめる
                     $childrens[] = $task_child;
                 }
@@ -147,7 +151,6 @@ class Home_model extends CI_Model {
             $task_parent->children = $childrens;
             $tasksAll[] = $task_parent;
         }
-
         return $tasksAll;
     }
 }
