@@ -4,13 +4,13 @@ class Task_repository extends CI_Model {
 
     public function getAllParent() 
     {
-         $tasksParent = $this->db->query('select * from tasks_parent')->result();
+         $tasksParent = $this->db->query('SELECT * FROM tasks_parent ORDER BY id ASC')->result();
          return $tasksParent;
     }
 
     public function getAllChild()
     {
-        $tasksChild  = $this->db->query('select * from tasks_child')->result();
+        $tasksChild  = $this->db->query('SELECT * FROM tasks_child ORDER BY parent_id ASC')->result();
         return $tasksChild;
     }
 
