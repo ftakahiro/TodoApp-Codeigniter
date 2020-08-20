@@ -266,7 +266,7 @@ $(function(){
     // データ抽出
     function getParentRecord(id){
         for(i = 0; i < taskData.length; i++){
-            if(Number(taskData[i].id) === id){
+            if(Number(taskData[i].id) === Number(id)){
                 return taskData[i];
             }
         }
@@ -357,6 +357,7 @@ $(function(){
             // 子タスクを作成するモーダル
             }else if(flag === FLAG_ON){
                 if(parentId){
+                    console.log(parentId);
                     const data = getParentRecord(parentId);
                     console.log(data);
                     $('#task_name').val('');
