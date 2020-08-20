@@ -25,7 +25,7 @@ $(function(){
                 let rowTask = `
                 <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}" onclick="setChildTask(${element.id});setParentComment(${element.id})">
                     <div class="row-task-name">
-                        <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(element.check_flag === FLAG_ON)? 'checked="checked"': ''}>
+                        <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''}>
                         <label for="parent_${element.id}">${element.name}</label>
                     </div>
                     <div class="area-option">
