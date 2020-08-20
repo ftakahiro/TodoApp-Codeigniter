@@ -1,6 +1,7 @@
 $(function(){
     const FLAG_ON = 1;
     const FLAG_OFF = 0;
+    const REGEX = /<script>/g;
     // タスクデータを取得
     $.ajax({
         url: '/home/getdata',
@@ -221,6 +222,10 @@ $(function(){
         // 親タスクを追加
         if(Number(element.dataset.flag) === FLAG_OFF){
             console.log($('#task_name').val());
+            if($('#task_name').val().match(REGEX) || $('#task_comment').val().match(REGEX)) {
+                alert('scriptタグを入力しないでください');
+                return;
+            }
             const data = {id: countParentNewTask, name: $('#task_name').val(), check_flag: FLAG_OFF, comment: $('#task_comment').val(), delete_flag: FLAG_OFF, children: []};
             taskData.push(data);
             countParentNewTask--;
@@ -230,6 +235,10 @@ $(function(){
         // 子タスクを追加
         }else if(Number(element.dataset.flag) === FLAG_ON){
             console.log('ok');
+            if($('#task_name').val().match(REGEX) || $('#task_comment').val().match(REGEX)) {
+                alert('scriptタグを入力しないでください');
+                return;
+            }
             const data = {id: countChildNewTask, name: $('#task_name').val(), parent_id: element.dataset.parentId, check_flag: FLAG_OFF, comment: $('#task_comment').val(), delete_flag: FLAG_OFF};
             for(i = 0; i < taskData.length; i++){
                 if(Number(taskData[i].id) === Number(element.dataset.parentId)){
@@ -251,6 +260,10 @@ $(function(){
     }
     // タスク編集ボタンをクリック
     window.editTask = function editTask(element){
+        if($('#task_name').val().match(REGEX) || $('#task_comment').val().match(REGEX)) {
+            alert('scriptタグを入力しないでください');
+            return;
+        }
         // 親タスクを編集
         if(Number(element.dataset.flag) === FLAG_OFF){
             updateParentData(element.dataset.parentId, $('#task_name').val(), $('#task_comment').val());
