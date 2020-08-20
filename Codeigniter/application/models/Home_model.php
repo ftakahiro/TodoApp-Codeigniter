@@ -44,7 +44,7 @@ class Home_model extends CI_Model {
         // 新規作成
         foreach($tasksAllNew as $taskParentNew) {
             // バリデーション
-            if ($this->form_validation->set_data($taskParentNew)->run('task_parent') === False){
+            if (!$this->form_validation->set_data($taskParentNew)->run('task_parent')) {
                 return False;
             }
             
@@ -62,9 +62,9 @@ class Home_model extends CI_Model {
 
                 // 新規作成された親タスクに子タスクも作成されていた場合
                 if (isset($taskParentNew['children'])) {
-                    foreach($taskParentNew['children'] as $childIncluded){
+                    foreach($taskParentNew['children'] as $childIncluded) {
                         // バリデーション
-                        if ($this->form_validation->set_data($childIncluded)->run('task_child') === False){
+                        if (!$this->form_validation->set_data($childIncluded)->run('task_child')) {
                             return False;
                         }
                         $data = [
@@ -94,9 +94,9 @@ class Home_model extends CI_Model {
             }
 
             if (isset($taskParentNew['children'])) {
-                foreach($taskParentNew['children'] as $taskChildNew){
+                foreach($taskParentNew['children'] as $taskChildNew) {
                     // バリデーション
-                    if ($this->form_validation->set_data($taskChildNew)->run('task_parent') === False){
+                    if (!$this->form_validation->set_data($taskChildNew)->run('task_parent')) {
                         return False;
                     }
                     // 子タスクの新規作成
@@ -132,7 +132,7 @@ class Home_model extends CI_Model {
     }
 
 
-    private function structData($tasks_parent, $tasks_child){
+    private function structData($tasks_parent, $tasks_child) {
         // タスクの構成を再編成
         $tasksAll = [];
         // 親タスクそれぞれのオブジェクトに、関係する子タスクの配列を追加
