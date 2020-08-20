@@ -14,7 +14,7 @@ class Home extends CI_Controller {
         // DBからタスク情報を取得
         $this->load->model('Home_model');
         $tasksAll = $this->Home_model->getTaskData();
-        $timestamp = time();
+        $timestamp = $this->Home_model->getUpdatedAt();
         
         $data=array(
             'tasksAll' => $tasksAll,
@@ -35,7 +35,7 @@ class Home extends CI_Controller {
         // 楽観ロックの実装
         $this->load->model('Home_model');
         $timestampNew = $this->Home_model->getUpdatedAt();
-        if ( $timestampNew = 0 || $timestampNew <= date("Y-m-d H:i:s",$timestamp)) {
+        if ( $timestampNew = 0 || $timestampNew <= $timestamp) {
             // データの追加、更新、削除
             $this->load->model('Home_model');
             $result=$this->Home_model->processData($tasksAllNew);
