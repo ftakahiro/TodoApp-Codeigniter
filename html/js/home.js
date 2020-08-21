@@ -1,6 +1,7 @@
 $(function(){
     const FLAG_ON = 1;
     const FLAG_OFF = 0;
+    // TODO: サニタイズする
     const REGEX = /<script>/g;
     // タスクデータを取得
     $.ajax({
@@ -411,7 +412,7 @@ $(function(){
                 });
 
             // 子タスクを編集するモーダル
-            }else if(flag === FLAG_ON){
+            }else if(flag === FLAG_ON){ // TODO: {にスペースを追加
                 if(parentId){
                     const data = getChildRecord(parentId, childId);
                     console.log(data);

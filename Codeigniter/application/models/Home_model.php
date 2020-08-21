@@ -10,7 +10,7 @@ class Home_model extends CI_Model {
         $tasksChild = $this->task_repository->getAllChild();
         
         // タスクの構成を再編成
-        $tasksAll = $this->structData($tasksParent,$tasksChild);
+        $tasksAll = $this->structData($tasksParent, $tasksChild); // TODO: 引数スペース
 
         return $tasksAll;
     }
@@ -18,7 +18,7 @@ class Home_model extends CI_Model {
     // 楽観ロック用にデータの中で最も新しいものを取得
     public function getUpdatedAt()
     {
-        $this->load->library('repositories/task_repository');
+        $this->load->library('repositories/Task_repository');
         $taskParent = $this->task_repository->getNewParentTop();
         $taskChild  = $this->task_repository->getNewChildTop();
 
@@ -36,13 +36,13 @@ class Home_model extends CI_Model {
             }
         }
     }
-
+    //TOdo
     public function processData($tasksAllNew)
     {
         $this->load->library('form_validation');
         // 新規作成
         $this->load->library('repositories/task_repository');
-        $this->task_repository->transactionStart();
+        $this->task_repository->transactionStart(); // TODO: returnを入れて検証
 
         foreach($tasksAllNew as $taskParentNew) {
             // バリデーション
@@ -90,7 +90,7 @@ class Home_model extends CI_Model {
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                     'updated_at' => date("Y-m-d H:i:s", time()),
                 ];
-                $this->task_repository->updateParentById($taskParentNew['id'],$data);
+                $this->task_repository->updateParentById($taskParentNew['id'], $data);
             }
 
             if (isset($taskParentNew['children'])) {
