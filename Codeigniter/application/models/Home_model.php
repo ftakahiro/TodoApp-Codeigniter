@@ -10,7 +10,7 @@ class Home_model extends CI_Model {
         $tasksChild = $this->task_repository->getAllChild();
         
         // タスクの構成を再編成
-        $tasksAll = $this->structData($tasksParent, $tasksChild); // TODO: 引数スペース
+        $tasksAll = $this->structData($tasksParent, $tasksChild); 
 
         return $tasksAll;
     }
@@ -42,7 +42,7 @@ class Home_model extends CI_Model {
         $this->load->library('form_validation');
         // 新規作成
         $this->load->library('repositories/task_repository');
-        $this->task_repository->transactionStart(); // TODO: returnを入れて検証
+        $this->task_repository->transactionStart(); 
 
         foreach($tasksAllNew as $taskParentNew) {
             // バリデーション
@@ -52,6 +52,13 @@ class Home_model extends CI_Model {
             
             // 親タスクの新規作成
             if ($taskParentNew['id'] < 0) {
+                // サニタイズ
+                if (preg_match('/[<>"]/', $taskParentNew['name'])) {
+                    $taskParentNew['name'] = htmlspecialchars($taskParentNew['name']);
+                } elseif (preg_match('/[<>"]/', $taskParentNew['comment'])) {
+                    $taskParentNew['comment'] = htmlspecialchars($taskParentNew['comment']);
+                }
+
                 $data = [
                     'name' => $taskParentNew['name'],
                     'comment' => $taskParentNew['comment'],
@@ -68,6 +75,11 @@ class Home_model extends CI_Model {
                         if (!$this->form_validation->set_data($childIncluded)->run('task_child')) {
                             return False;
                         }
+                        if (preg_match('/[<>"]/', $childIncluded['name'])) {
+                            $childIncluded['name'] = htmlspecialchars($childIncluded['name']);
+                        } elseif (preg_match('/[<>"]/', $childIncluded['comment'])) {
+                            $childIncluded['comment'] = htmlspecialchars($childIncluded['comment']);
+                        }
                         $data = [
                             'name' => $childIncluded['name'],
                             'comment' => $childIncluded['comment'],
@@ -83,6 +95,12 @@ class Home_model extends CI_Model {
 
             // 親タスク削除 and 更新
             } else {
+                // サニタイズ
+                if (preg_match('/[<>"]/', $taskParentNew['name'])) {
+                    $taskParentNew['name'] = htmlspecialchars($taskParentNew['name']);
+                } elseif (preg_match('/[<>"]/', $taskParentNew['comment'])) {
+                    $taskParentNew['comment'] = htmlspecialchars($taskParentNew['comment']);
+                }
                 $data = [
                     'name' => $taskParentNew['name'],
                     'comment' => $taskParentNew['comment'],
@@ -98,6 +116,11 @@ class Home_model extends CI_Model {
                     // バリデーション
                     if (!$this->form_validation->set_data($taskChildNew)->run('task_parent')) {
                         return False;
+                    }
+                    if (preg_match('/[<>"]/', $taskChildNew['name'])) {
+                        $taskChildNew['name'] = htmlspecialchars($taskChildNew['name']);
+                    } elseif (preg_match('/[<>"]/', $taskChildNew['comment'])) {
+                        $taskChildNew['comment'] = htmlspecialchars($taskChildNew['comment']);
                     }
                     // 子タスクの新規作成
                     if ($taskChildNew['id'] < 0 && $taskChildNew['parent_id'] > 0) {

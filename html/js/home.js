@@ -1,8 +1,7 @@
 $(function(){
     const FLAG_ON = 1;
     const FLAG_OFF = 0;
-    // TODO: サニタイズする
-    const REGEX = /<script>/g;
+
     // タスクデータを取得
     $.ajax({
         url: '/home/getdata',
@@ -11,7 +10,7 @@ $(function(){
     })
     .done(function(data) {
         window.taskDataOrg = data.tasksAll;
-        window.taskData = data.tasksAll;
+        window.taskData = data.tasksAll;　
         window.timestamp = data.timestamp;
         console.log(timestamp);
         setParentTask(taskData);
@@ -93,7 +92,7 @@ $(function(){
     // 親タスクのコメントをセット
     window.setParentComment = function setParentComment(id) {
         const dataSet = getParentRecord(id);
-        $('.comment-header').text(dataSet.name);
+        $('.comment-header').html(dataSet.name);
         $('.comment').val(dataSet.comment);
         $('.comment').attr({
             'data-flag': FLAG_OFF, // 親タスクのコメントであることを示すフラグ
@@ -105,14 +104,16 @@ $(function(){
     var childFocused;
     window.setChildComment = function setChildComment(element) {
         // 子タスクにフォーカスを当てる
+        const parentRecord = getParentRecord(element.dataset.parentId);
+        const childRecord = getChildRecord(element.dataset.parentId,element.dataset.childId);
         if(childFocused) {
             $(childFocused).css('background-color', 'white');
         }
         childFocused =`#row_child_${element.dataset.childId}`;
         $(childFocused).css('background-color', '#FEE715');
 
-        $('.comment-header').text(`${element.dataset.parent} > ${element.dataset.child}`);
-        $('.comment').val(element.dataset.comment);
+        $('.comment-header').html(`${parentRecord.name} > ${childRecord.name}`);
+        $('.comment').val(reverseSanitize(childRecord.comment));
         $('.comment').attr({
             'data-flag': FLAG_ON, // 子タスクのコメントであることを示すフラグ
             'data-child-id': `${element.dataset.childId}`,
@@ -388,9 +389,9 @@ $(function(){
             // 親タスクを編集するモーダル
             if(flag === FLAG_OFF) {
                 const data=getParentRecord(parentId);
-                $('#task_name').val(data.name);
-                $('#task_comment').val(data.comment);
-                $(".make-task-header").text(`${data.name}の編集`);
+                $('#task_name').val(reverseSanitize(data.name));
+                $('#task_comment').val(reverseSanitize(data.comment));
+                $(".make-task-header").html(`${data.name}の編集`);
                 $("#modal_overlay").css('display', 'block');
                 $("#modal_make_task").css('display', 'block');
                 $('.bt-task-add').text('編集');
@@ -406,11 +407,11 @@ $(function(){
                 if(parentId) {
                     const data = getChildRecord(parentId, childId);
                     console.log(data);
-                    $('#task_name').val(data.name);
-                    $('#task_comment').val(data.comment);
+                    $('#task_name').val(reverseSanitize(data.name));
+                    $('#task_comment').val(reverseSanitize(data.comment));
                     $("#modal_overlay").css('display', 'block');
                     $("#modal_make_task").css('display', 'block');
-                    $(".make-task-header").text(`${data.name}を編集`);
+                    $(".make-task-header").html(`${data.name}を編集`);
                     $('.bt-task-add').text('編集');
                     $('.bt-task-add').attr({
                         'onclick': 'editTask(this)',
@@ -460,5 +461,12 @@ $(function(){
           .replace(/"/g,"&quot;")
           .replace(/</g,"&lt;")
           .replace(/>/g,"&gt;")
+    }
+    // リバースサニタイズ
+    function reverseSanitize(str) {
+        return String(str).replace(/&amp;/g,"&")
+          .replace(/&quot;/g,'"')
+          .replace(/&lt;/g,"<")
+          .replace(/&gt;/g,">")
     }
 });
