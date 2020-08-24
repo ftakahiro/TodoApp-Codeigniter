@@ -53,8 +53,8 @@ class Home_model extends CI_Model {
             // 親タスクの新規作成
             if ($taskParentNew['id'] < 0) {
                 $data = [
-                    'name' => htmlspecialchars($taskParentNew['name']),
-                    'comment' => htmlspecialchars($taskParentNew['comment']),
+                    'name' => $taskParentNew['name'],
+                    'comment' => $taskParentNew['comment'],
                     'check_flag' => (int)$taskParentNew['check_flag'],
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                 ];
@@ -69,8 +69,8 @@ class Home_model extends CI_Model {
                             return False;
                         }
                         $data = [
-                            'name' => htmlspecialchars($childIncluded['name']),
-                            'comment' => htmlspecialchars($childIncluded['comment']),
+                            'name' => $childIncluded['name'],
+                            'comment' => $childIncluded['comment'],
                             'check_flag' => (int)$childIncluded['check_flag'],
                             'delete_flag' => (int)$childIncluded['delete_flag'],
                             'parent_id' => $insertedId, //新規作成した親タスクのID
@@ -84,8 +84,8 @@ class Home_model extends CI_Model {
             // 親タスク削除 and 更新
             } else {
                 $data = [
-                    'name' => htmlspecialchars($taskParentNew['name']),
-                    'comment' => htmlspecialchars($taskParentNew['comment']),
+                    'name' => $taskParentNew['name'],
+                    'comment' => $taskParentNew['comment'],
                     'check_flag' => (int)$taskParentNew['check_flag'],
                     'delete_flag' => (int)$taskParentNew['delete_flag'],
                     'updated_at' => date("Y-m-d H:i:s", time()),
@@ -102,8 +102,8 @@ class Home_model extends CI_Model {
                     // 子タスクの新規作成
                     if ($taskChildNew['id'] < 0 && $taskChildNew['parent_id'] > 0) {
                         $data = [
-                            'name' => htmlspecialchars($taskChildNew['name']),
-                            'comment' => htmlspecialchars($taskChildNew['comment']),
+                            'name' => $taskChildNew['name'],
+                            'comment' => $taskChildNew['comment'],
                             'check_flag' => (int)$taskChildNew['check_flag'],
                             'delete_flag' =>(int)$taskChildNew['delete_flag'],
                             'parent_id' => (int)$taskChildNew['parent_id'],
@@ -113,8 +113,8 @@ class Home_model extends CI_Model {
                     // 子タスク削除 and 更新
                     } else {
                         $data = [
-                            'name' => htmlspecialchars($taskChildNew['name']),
-                            'comment' => htmlspecialchars($taskChildNew['comment']),
+                            'name' => $taskChildNew['name'],
+                            'comment' => $taskChildNew['comment'],
                             'check_flag' => (int)$taskChildNew['check_flag'],
                             'delete_flag' => (int)$taskChildNew['delete_flag'],
                             'updated_at' => date("Y-m-d H:i:s", time()),

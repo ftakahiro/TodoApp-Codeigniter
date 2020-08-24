@@ -27,8 +27,10 @@ $(function(){
                 let rowTask = `
                 <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}" onclick="setChildTask(${element.id});setParentComment(${element.id})">
                     <div class="row-task-name">
+                    <label for="parent_${element.id}">
                         <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''}>
-                        <label for="parent_${element.id}">${element.name}</label>
+                        ${element.name}
+                    </label>
                     </div>
                     <div class="area-option">
                         <img class="icon-option" src="/img/option.png" alt="option icon" onclick="toggleParentOption(${element.id})">
@@ -223,11 +225,7 @@ $(function(){
         // 親タスクを追加
         if(Number(element.dataset.flag) === FLAG_OFF) {
             console.log($('#task_name').val());
-            if($('#task_name').val().match(REGEX) || $('#task_comment').val().match(REGEX)) {
-                alert('scriptタグを入力しないでください');
-                return;
-            }
-            const data = {id: countParentNewTask, name: $('#task_name').val(), check_flag: FLAG_OFF, comment: $('#task_comment').val(), delete_flag: FLAG_OFF, children: []};
+            const data = {id: countParentNewTask, name: sanitize($('#task_name').val()), check_flag: FLAG_OFF, comment: sanitize($('#task_comment').val()), delete_flag: FLAG_OFF, children: []};
             taskData.push(data);
             countParentNewTask--;
             console.log(taskData);
@@ -236,11 +234,7 @@ $(function(){
         // 子タスクを追加
         }else if(Number(element.dataset.flag) === FLAG_ON) {
             console.log('ok');
-            if($('#task_name').val().match(REGEX) || $('#task_comment').val().match(REGEX)) {
-                alert('scriptタグを入力しないでください');
-                return;
-            }
-            const data = {id: countChildNewTask, name: $('#task_name').val(), parent_id: element.dataset.parentId, check_flag: FLAG_OFF, comment: $('#task_comment').val(), delete_flag: FLAG_OFF};
+            const data = {id: countChildNewTask, name: sanitize($('#task_name').val()), parent_id: element.dataset.parentId, check_flag: FLAG_OFF, comment: sanitize($('#task_comment').val()), delete_flag: FLAG_OFF};
             for(i = 0; i < taskData.length; i++) {
                 if(Number(taskData[i].id) === Number(element.dataset.parentId)) {
                     // 親タスクに新規作成した子タスクを追加
@@ -261,18 +255,14 @@ $(function(){
     }
     // タスク編集ボタンをクリック
     window.editTask = function editTask(element) {
-        if($('#task_name').val().match(REGEX) || $('#task_comment').val().match(REGEX)) {
-            alert('scriptタグを入力しないでください');
-            return;
-        }
         // 親タスクを編集
         if(Number(element.dataset.flag) === FLAG_OFF) {
-            updateParentData(element.dataset.parentId, $('#task_name').val(), $('#task_comment').val());
+            updateParentData(element.dataset.parentId, sanitize($('#task_name').val()), sanitize($('#task_comment').val()));
             setParentTask(taskData);
             closeModal();
         // 子タスクを編集
         }else if(Number(element.dataset.flag) === FLAG_ON) {
-            updateChildData(element.dataset.childId, element.dataset.parentId, null, $('#task_name').val(), $('#task_comment').val());
+            updateChildData(element.dataset.childId, element.dataset.parentId, null, sanitize($('#task_name').val()), sanitize($('#task_comment').val()));
             closeModal();
         }
 
@@ -369,7 +359,7 @@ $(function(){
                 });
     
             // 子タスクを作成するモーダル
-            }else if(flag === FLAG_ON) {
+            } else if (flag === FLAG_ON) {
                 if(parentId) {
                     console.log(parentId);
                     const data = getParentRecord(parentId);
@@ -378,7 +368,7 @@ $(function(){
                     $('#task_comment').val('');
                     $("#modal_overlay").css('display', 'block');
                     $("#modal_make_task").css('display', 'block');
-                    $(".make-task-header").text(`${data.name}に作成`);
+                    $(".make-task-header").html(`${data.name}に作成`);
                     $('.bt-task-add').text('追加');
                     $('.bt-task-add').attr({
                         'onclick': 'makeTask(this)',
@@ -412,7 +402,7 @@ $(function(){
                 });
 
             // 子タスクを編集するモーダル
-            } else if (flag === FLAG_ON) { // TODO: {にスペースを追加
+            } else if (flag === FLAG_ON) { 
                 if(parentId) {
                     const data = getChildRecord(parentId, childId);
                     console.log(data);
@@ -462,5 +452,13 @@ $(function(){
             console.log(errorThrown);
             alert('変更の保存に失敗しました。');
         })
+    }
+
+    // サニタイズ
+    function sanitize(str) {
+        return String(str).replace(/&/g,"&amp;")
+          .replace(/"/g,"&quot;")
+          .replace(/</g,"&lt;")
+          .replace(/>/g,"&gt;")
     }
 });
