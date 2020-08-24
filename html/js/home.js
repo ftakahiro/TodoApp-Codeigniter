@@ -1,7 +1,6 @@
 $(function(){
     const FLAG_ON = 1;
     const FLAG_OFF = 0;
-    // TODO: サニタイズに関して修正 サーバーサイドでもサニタイズを
 
     // タスクデータを取得
     $.ajax({
