@@ -93,7 +93,7 @@ $(function(){
     window.setParentComment = function setParentComment(id) {
         const dataSet = getParentRecord(id);
         $('.comment-header').html(dataSet.name);
-        $('.comment').val(dataSet.comment);
+        $('.comment').val(reverseSanitize(dataSet.comment));
         $('.comment').attr({
             'data-flag': FLAG_OFF, // 親タスクのコメントであることを示すフラグ
             'data-id': `${dataSet.id}`,
