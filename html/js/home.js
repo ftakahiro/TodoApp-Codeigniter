@@ -26,10 +26,8 @@ $(function(){
                 let rowTask = `
                 <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}" onclick="setChildTask(${element.id});setParentComment(${element.id})">
                     <div class="row-task-name">
-                    <label for="parent_${element.id}">
-                        <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''}>
-                        ${element.name}
-                    </label>
+                    <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''}>
+                    <label for="parent_${element.id}">${element.name}</label>
                     </div>
                     <div class="area-option">
                         <img class="icon-option" src="/img/option.png" alt="option icon" onclick="toggleParentOption(${element.id})">
@@ -315,7 +313,7 @@ $(function(){
             }
         }
         $("#tasks_child").empty();
-        $(".comment").val("");
+        $(".comment").val("コメント");
         setParentTask(taskData);
         console.log(taskData);
     }
@@ -334,7 +332,7 @@ $(function(){
         checkParent(parentId);
         setParentTask(taskData);
         setChildTask(parentId);
-        $(".comment").val("");
+        $(".comment").val("コメント");
 
     }
    
