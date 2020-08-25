@@ -22,9 +22,8 @@ $(function(){
         $("#tasks_parent").empty();
         taskData.forEach((element) => {
             if(Number(element.delete_flag) !== FLAG_ON) {
-                console.log(typeof element.delete_flag);
                 let rowTask = `
-                <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}" onclick="setChildTask(${element.id});setParentComment(${element.id})">
+                <div id="row_parent_${element.id}" class="row-task task-parent" data-id="${element.id}" data-name="${element.name}" data-comment="${element.comment}">
                     <div class="row-task-name">
                     <input id="parent_${element.id}" type="checkbox" data-id="${element.id}" disabled="disabled" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''}>
                     <label for="parent_${element.id}">${element.name}</label>
@@ -38,9 +37,16 @@ $(function(){
                     </div>
                 </div>`;
                 $("#tasks_parent").append(rowTask);
+                // クリック時のイベントを追加
+                $(`#row_parent_${element.id}`).on('click', (e) => {
+                    setChildTask(element.id);
+                    setParentComment(element.id)
+                    // e.stopPropagation();
+                });
             }
         });
     }
+    
 
     // 親タスククリック時に子タスクを設置
     var parentFocused;
@@ -63,7 +69,7 @@ $(function(){
         targetParentTask.children.forEach((element) => {
             if(Number(element.delete_flag) !== FLAG_ON) {
                 let rowTask = `
-                    <div id="row_child_${element.id}" class="row-task" data-parent="${targetParentTask.name}" data-child="${element.name}" data-child-id="${element.id}" data-parent-id="${targetParentTask.id}" data-comment="${element.comment}"  onclick="setChildComment(this)">
+                    <div id="row_child_${element.id}" class="row-task" data-parent="${targetParentTask.name}" data-child="${element.name}" data-child-id="${element.id}" data-parent-id="${targetParentTask.id}" data-comment="${element.comment}">
                         <div class="row-task-name">
                             <input class="child_checkbox" id="child_${element.id}" type="checkbox" ${(Number(element.check_flag) === FLAG_ON)? 'checked="checked"': ''} data-id="${element.id}" onchange="childCheckEvent(this.checked, ${element.id}, ${element.parent_id})">
                             <label for="child_${element.id}">${element.name}</label>
@@ -77,6 +83,10 @@ $(function(){
                         </div>
                     </div>`;
                 $("#tasks_child").append(rowTask);
+                // クリック時のイベントを追加
+                $(`#row_child_${element.id}`).on('click', (e) => {
+                    setChildComment(element.parent_id, element.id);
+                });
             }
         });
 
@@ -87,8 +97,11 @@ $(function(){
         
     }
 
+
     // 親タスクのコメントをセット
     window.setParentComment = function setParentComment(id) {
+        console.log(`setParentCommet: ${id}`);
+        console.log('親タスクがクリックされコメントがセットされた');
         const dataSet = getParentRecord(id);
         $('.comment-header').html(dataSet.name);
         $('.comment').val(reverseSanitize(dataSet.comment));
@@ -100,22 +113,23 @@ $(function(){
 
     // 子タスクのコメントをセット
     var childFocused;
-    window.setChildComment = function setChildComment(element) {
+    window.setChildComment = function setChildComment(parentId, childId) {
+        console.log('子タスクがクリックされコメントがセットされた');
         // 子タスクにフォーカスを当てる
-        const parentRecord = getParentRecord(element.dataset.parentId);
-        const childRecord = getChildRecord(element.dataset.parentId,element.dataset.childId);
+        const parentRecord = getParentRecord(parentId);
+        const childRecord = getChildRecord(parentId, childId);
         if(childFocused) {
             $(childFocused).css('background-color', 'white');
         }
-        childFocused =`#row_child_${element.dataset.childId}`;
+        childFocused =`#row_child_${childId}`;
         $(childFocused).css('background-color', '#FEE715');
 
         $('.comment-header').html(`${parentRecord.name} > ${childRecord.name}`);
         $('.comment').val(reverseSanitize(childRecord.comment));
         $('.comment').attr({
             'data-flag': FLAG_ON, // 子タスクのコメントであることを示すフラグ
-            'data-child-id': `${element.dataset.childId}`,
-            'data-parent-id': `${element.dataset.parentId}`,
+            'data-child-id': `${childId}`,
+            'data-parent-id': `${parentId}`,
         });
        
 
@@ -300,7 +314,7 @@ $(function(){
 
     }
 
-    // タスク削除
+    // 親タスク削除
     window.deleteParentTask = function deleteParentTask(parentId) {
         for(i = 0; i<taskData.length; i++) {
             if(Number(taskData[i].id) === Number(parentId)) {
@@ -313,10 +327,12 @@ $(function(){
             }
         }
         $("#tasks_child").empty();
-        $(".comment").val("コメント");
         setParentTask(taskData);
-        console.log(taskData);
+        $('.comment').val("");
+        $('.comment-header').html(`タスク名`);
     }
+
+    // 子タスクの削除
     window.deleteChildTask = function deleteChildTask(parentId, childId) {
         for(pi = 0; pi<taskData.length; pi++) {
             if(Number(taskData[pi].id) === Number(parentId)) {
@@ -331,9 +347,8 @@ $(function(){
         }
         checkParent(parentId);
         setParentTask(taskData);
+        setParentComment(parentId);
         setChildTask(parentId);
-        $(".comment").val("コメント");
-
     }
    
     // タスク作成,編集モーダルを開く openModal(追加、編集を判別する,親タスク、子タスクを判別,parentId,childId)
