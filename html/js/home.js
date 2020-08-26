@@ -40,8 +40,7 @@ $(function(){
                 // クリック時のイベントを追加
                 $(`#row_parent_${element.id}`).on('click', (e) => {
                     setChildTask(element.id);
-                    setParentComment(element.id)
-                    // e.stopPropagation();
+                    setParentComment(element.id);
                 });
             }
         });
@@ -391,7 +390,7 @@ $(function(){
                         'data-parent-id': parentId,
                     });
                 } else {
-                    alert('タスクを選択して下さい');
+                    alert('親タスクを選択して下さい');
                 }
     
             }
