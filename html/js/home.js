@@ -224,6 +224,7 @@ $(function(){
             // タスクデータを変更したので再びセット
             setParentTask(taskData);
             setChildTask(parentId);
+            $(`#row_child_${childId}`).click();
             
         });
         console.log(taskData);
